@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight, Menu, X, Star, Trophy, Users, GamepadIcon, D
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   const brands = [
     {
@@ -15,38 +16,58 @@ export default function Home() {
       logo: "https://ext.same-assets.com/2949464398/439271825.svg",
       description: "Feel the adrenaline rush as you enter the world of N1 Casino! Playing here feels a lot like racing – same luxurious, state-of-the-art accommodation, same heart-pounding emotions.",
       license: "MGA",
+      preview: "https://ext.same-assets.com/2949464398/3477486284.webp",
     },
     {
       name: "N1 Bet",
       logo: "https://ext.same-assets.com/2949464398/1719355002.svg",
       description: "Unlock the full potential of online sports betting! As a licensed Curaçao operator, N1Bet offers seamless withdrawal options in both fiat and crypto currencies.",
       license: "Curaçao",
+      preview: "https://ext.same-assets.com/2949464398/3719315238.webp",
     },
     {
       name: "Slot Hunter",
       logo: "https://ext.same-assets.com/2949464398/3637740016.svg",
       description: "Embark on an exciting quest for prizes at Slot Hunter, the ultimate destination for treasure Hunters with diverse selection of games.",
       license: "MGA",
+      preview: "https://ext.same-assets.com/2949464398/1771323914.webp",
     },
     {
       name: "Joo Casino",
       logo: "https://ext.same-assets.com/2949464398/602603702.svg",
       description: "The beach is always sunny, the sea is always warm and the world is full of adventures at Joo Casino with unique bonuses and rewards.",
       license: "Curaçao",
+      preview: "https://ext.same-assets.com/2949464398/938529399.webp",
     },
     {
       name: "Lucky Hunter",
       logo: "https://ext.same-assets.com/2949464398/704327969.svg",
       description: "At Lucky Hunter, it's all about the thrill of the hunt and emerging as the top predator with both fiat and cryptocurrency deposits.",
       license: "Curaçao",
+      preview: "https://ext.same-assets.com/2949464398/1686205810.webp",
     },
     {
       name: "Slots Mines",
       logo: "https://ext.same-assets.com/2949464398/732064447.svg",
       description: "Don your hard hat, check the sharpness of your pickaxe, and descend into Slots Mines to mine your way to riches!",
       license: "Kahnawake",
+      preview: "https://ext.same-assets.com/2949464398/2117238272.webp",
     },
   ];
+
+  const handleTabChange = (newTab: number) => {
+    if (newTab === activeTab || isTransitioning) return;
+
+    setIsTransitioning(true);
+
+    // Short delay to allow fade out animation
+    setTimeout(() => {
+      setActiveTab(newTab);
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 50);
+    }, 150);
+  };
 
   const testimonials = [
     {
@@ -208,35 +229,82 @@ export default function Home() {
             {brands.map((brand, index) => (
               <button
                 key={index}
-                onClick={() => setActiveTab(index)}
-                className={`p-4 rounded-lg transition-all ${
-                  activeTab === index ? 'bg-n1-red' : 'bg-n1-gray hover:bg-n1-gray/70'
-                }`}
+                onClick={() => handleTabChange(index)}
+                disabled={isTransitioning}
+                className={`p-4 rounded-lg transition-all duration-300 transform hover:scale-105 ${
+                  activeTab === index
+                    ? 'bg-n1-red shadow-lg shadow-n1-red/25 scale-105'
+                    : 'bg-n1-gray hover:bg-n1-gray/70 hover:shadow-md'
+                } ${isTransitioning ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                <img src={brand.logo} alt={brand.name} className="h-8" />
+                <img
+                  src={brand.logo}
+                  alt={brand.name}
+                  className={`h-8 transition-all duration-300 ${
+                    activeTab === index ? 'brightness-110' : 'brightness-75 hover:brightness-100'
+                  }`}
+                />
               </button>
             ))}
           </div>
 
           {/* Active Brand Content */}
-          <div className="bg-n1-gray rounded-lg p-8 lg:p-12">
-            <div className="grid lg:grid-cols-2 gap-8 items-center">
-              <div>
-                <img src={brands[activeTab].logo} alt={brands[activeTab].name} className="h-12 mb-6" />
-                <p className="text-gray-300 mb-6">{brands[activeTab].description}</p>
-                <div className="flex items-center gap-4 mb-6">
-                  <span className="bg-n1-red/20 text-n1-red px-4 py-2 rounded">
-                    License: {brands[activeTab].license}
+          <div className="bg-n1-gray rounded-lg p-8 lg:p-12 relative overflow-hidden">
+            {/* Background transition overlay */}
+            <div className={`absolute inset-0 bg-gradient-to-r from-n1-red/5 to-transparent transition-opacity duration-300 ${
+              isTransitioning ? 'opacity-100' : 'opacity-0'
+            }`}></div>
+
+            <div className={`grid lg:grid-cols-2 gap-8 items-center transition-all duration-300 ${
+              isTransitioning ? 'opacity-0 transform translate-y-4' : 'opacity-100 transform translate-y-0'
+            }`}>
+              <div className="space-y-6">
+                <div className="transform transition-all duration-500 delay-100">
+                  <img
+                    src={brands[activeTab].logo}
+                    alt={brands[activeTab].name}
+                    className="h-12 mb-6 transition-all duration-300"
+                  />
+                </div>
+
+                <div className="transform transition-all duration-500 delay-200">
+                  <p className="text-gray-300 mb-6 leading-relaxed">
+                    {brands[activeTab].description}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-4 mb-6 transform transition-all duration-500 delay-300">
+                  <span className="bg-n1-red/20 text-n1-red px-4 py-2 rounded-full border border-n1-red/30 transition-all duration-300 hover:bg-n1-red/30">
+                    <span className="font-semibold">License:</span> {brands[activeTab].license}
                   </span>
                 </div>
-                <div className="flex gap-4">
-                  <button className="btn-primary">Start promoting</button>
-                  <button className="btn-secondary">See Details</button>
+
+                <div className="flex gap-4 transform transition-all duration-500 delay-400">
+                  <button className="btn-primary hover:scale-105 transition-transform duration-300">
+                    Start promoting
+                  </button>
+                  <button className="btn-secondary hover:scale-105 transition-transform duration-300">
+                    See Details
+                  </button>
                 </div>
               </div>
-              <div className="bg-black rounded-lg p-4">
-                <div className="aspect-video bg-gradient-to-br from-n1-red/20 to-transparent rounded-lg flex items-center justify-center">
-                  <span className="text-4xl font-druk opacity-20">PREVIEW</span>
+
+              <div className="bg-black rounded-lg p-4 transform transition-all duration-500 delay-300">
+                <div className="aspect-video bg-gradient-to-br from-n1-red/20 to-transparent rounded-lg overflow-hidden relative group">
+                  {brands[activeTab].preview ? (
+                    <img
+                      src={brands[activeTab].preview}
+                      alt={`${brands[activeTab].name} Preview`}
+                      className="w-full h-full object-cover rounded-lg transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full">
+                      <span className="text-4xl font-druk opacity-20">PREVIEW</span>
+                    </div>
+                  )}
+
+                  {/* Overlay effect */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
               </div>
             </div>
